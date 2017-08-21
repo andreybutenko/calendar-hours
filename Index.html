@@ -16,7 +16,7 @@
               </li>
               <li
                 v-for="(calendar, index) in calendars"
-                :key="calendar.id"
+                :key="index"
                 class="list-group-item list-calendar-item"
                 :class="{ active: index == selectedCalendarIndex }"
                 :style="{ borderLeftColor: calendar.color }"
@@ -46,12 +46,40 @@
                       <input type="text" class="form-control" id="search-text" v-model.trim="filterForm.title">
                     </div>
                   </div>
+                  
+                  <div class="form-group">
+                    <label for="colors-multiselect" class="filter-form-label">Colors</label>
+                    <div class="filter-form-value">
+                      <multiselect
+                        id="colors-multiselect"
+                        class="multiselect"
+                        :options="eventColors"
+                        :searchable="true"
+                        :multiple="true"
+                        placeholder="Select event colors"
+                        label="name"
+                        track-by="value"
+                        :close-on-select="false"
+                        v-model="filterForm.colors">
+                        <template slot="option" scope="props">
+                          <div class="multiselect-color-label" :style="{ backgroundColor: props.option.color }"></div>{{ props.option.name }}
+                        </template>
+                        
+                        <template slot="tag" scope="props">
+                          <span class="multiselect__tag" :style="{ backgroundColor: props.option.color }">
+                            {{ props.option.name }}
+                            <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)" class="multiselect__tag-icon"></i>
+                          </span>
+                        </template>
+                      </multiselect>
+                    </div>
+                  </div>
                     
                   <div class="form-group">
                     <label for="start-date" class="filter-form-label">Start</label>
                     <div class="filter-form-value input-group">
                       <input type="text" class="form-control" id="start-date" v-model.number="filterForm.weeksBefore">
-                      <span class="input-group-addon">weeks before</span>
+                      <span class="input-group-addon">weeks ago</span>
                     </div>
                   </div>
                     
@@ -63,7 +91,13 @@
                   </div>
                 </form>
                 
-                <button type="button" class="btn btn-primary" @click="onPressSearch">Search</button>
+                <button class="btn btn-link" @click="toggleAdvanced">Advanced <i class="fa" :class="{ 'fa-angle-down': !advancedVisible, 'fa-angle-up': advancedVisible }" aria-hidden="true"></i></button>
+                <button class="btn btn-primary" @click="onPressSearch">Search</button>
+              </div>
+              <div class="card-body" v-if="advancedVisible">
+                <h6 class="card-subtitle text-muted">Title</h6>
+                <p>
+                  You can select multiple strings to search for in the title by seperating them with an <code>OR</code>! For example, <code>work OR freelance</code> will find events with work or freelance in the title!
               </div>
             </div>
             
@@ -76,7 +110,7 @@
             <ul class="list-group">
               <li 
                 v-for="(event, index) in events"
-                :key="event.id"
+                :key="index"
                 class="list-group-item list-event-item"
                 :style="{ borderLeftColor: event.color != '' ? getColor(event.color) : currentCalendarColor }">
                 <h5 class="card-title">{{ event.title }}</h5>

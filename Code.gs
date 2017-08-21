@@ -30,14 +30,46 @@ function getCalendars() {
   return result;
 }
 
-function getTime(calendarName, title, weeksBefore) {
+function areTitlesEmpty(titles) {
+  return matches.length == 1 && matches[0] == '';
+}
+
+function titleMatch(titleRaw, matches) {
+  var title = titleRaw.toLowerCase();
+  for(var i = 0; i < matches.length; i++) {
+    if(title.indexOf(matches[i].toLowerCase()) !== -1) {
+      Logger.log(title + ' matches ' + matches[i]);
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function colorMatch(color, matches) {
+  if(matches.length == 0) return true;
+  
+  for(var i = 0; i < matches.length; i++) {
+    if(color == matches[i]) {
+      Logger.log(color + ' matches ' + matches[i]);
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function getTime(options) {
+  Logger.log(options);
+  var calendarName = options.calendarName;
+  var titles = options.titles;
+  var colors = options.colors;
+  var weeksBefore = options.weeksBefore;
+  
   var calendar = CalendarApp.getCalendarsByName(calendarName)[0];
   var now = new Date();
   var start = new Date(now.getTime() - (weeksBefore * 7 * 24 * 60 * 60 * 1000));
   var end = now;
-  var searchOptions = {
-    search: title
-  };
     
   var calendarEvents = calendar.getEvents(start, end);
   
@@ -48,7 +80,7 @@ function getTime(calendarName, title, weeksBefore) {
   
   for(var i = 0; i < calendarEvents.length; i++) {
     var event = calendarEvents[i];
-    if(!event.isAllDayEvent() && event.getTitle().indexOf(title) !== -1) {
+    if(!event.isAllDayEvent() && (titleMatch(event.getTitle(), titles) && colorMatch(event.getColor(), colors))) {
       var startTime = event.getStartTime();
       var endTime = event.getEndTime();
       
