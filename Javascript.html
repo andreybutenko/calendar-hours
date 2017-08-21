@@ -24,7 +24,7 @@
           this.events = resultData.events;
         })
         .getTime({
-          calendarName: this.currentCalendarName,
+          calendars: this.currentCalendars,
           titles: this.currentSearchTerms,
           colors: this.currentColors,
           weeksBefore: this.filterForm.weeksBefore
@@ -70,6 +70,13 @@
       currentCalendarColor: function() {
         return this.selectedCalendarIndex != -1 ? this.calendars[this.selectedCalendarIndex].color : '';
       },
+      currentCalendars: function() {
+        var currentCalendars = [];
+        for(var i = 0; i < this.filterForm.calendars.length; i++) {
+          currentCalendars.push(this.filterForm.calendars[i].name);
+        }
+        return currentCalendars;
+      },
       currentSearchTerms: function() {
         return this.filterForm.title.split(' OR ');
       },
@@ -88,6 +95,7 @@
       events: [],
       calendars: [],
       filterForm: {
+        calendars: [],
         colors: [],
         title: '',
         weeksBefore: 52

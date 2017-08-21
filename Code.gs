@@ -61,17 +61,25 @@ function colorMatch(color, matches) {
 
 function getTime(options) {
   Logger.log(options);
-  var calendarName = options.calendarName;
+  
+  var calendars = options.calendars;
   var titles = options.titles;
   var colors = options.colors;
   var weeksBefore = options.weeksBefore;
   
-  var calendar = CalendarApp.getCalendarsByName(calendarName)[0];
   var now = new Date();
   var start = new Date(now.getTime() - (weeksBefore * 7 * 24 * 60 * 60 * 1000));
   var end = now;
-    
-  var calendarEvents = calendar.getEvents(start, end);
+  
+  var calendarEvents = [];
+  
+  for(var i = 0; i < calendars.length; i++) {
+    var calendar = CalendarApp.getCalendarsByName(calendars[i])[0];
+    var events = calendar.getEvents(start, end);
+    for(var j = 0; j < events.length; j++) {
+      calendarEvents.push(events[j]);
+    }
+  }
   
   var result = {
     time: 0,
