@@ -11,7 +11,7 @@
       google.script.run.withSuccessHandler((calendarData) => {
         this.calendars = calendarData.calendars;
         this.selectedCalendarIndex = calendarData.primaryIndex;
-        this.message = 'loaded!'
+        this.filterForm.calendars.push(this.calendars[this.selectedCalendarIndex]);
       }).getCalendars();
     },
     methods: {
@@ -89,7 +89,6 @@
       }
     },
     data: {
-      message: 'Hello Vue!',
       selectedCalendarIndex: -1,
       timeSpent: -1,
       events: [],
