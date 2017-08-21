@@ -1,0 +1,55 @@
+<script src="https://unpkg.com/vue"></script>
+<script>
+  var app = new Vue({
+    el: '#app',
+    mounted: function() {
+      google.script.run.withSuccessHandler((calendarData) => {
+        this.calendars = calendarData.calendars;
+        this.selectedCalendarIndex = calendarData.primaryIndex;
+        this.message = 'loaded!'
+      }).getCalendars();
+    },
+    methods: {
+      selectCalendar(index) {
+        this.selectedCalendarIndex = index;
+      },
+      onPressSearch() {
+        google.script.run.withSuccessHandler((resultData) => {
+          this.timeSpent = resultData;
+        }).getTime(this.calendars[this.selectedCalendarIndex].name, this.filterForm.title, this.filterForm.weeksBefore);
+      }
+    },
+    computed: {
+      timeSpentParsed: function() {
+        var timeSpentMinutes = this.timeSpent / (60 * 1000);
+        var minutes = Math.floor(timeSpentMinutes % 60);
+        var hours = Math.floor((timeSpentMinutes / 60) % 24);
+        var days = Math.floor((timeSpentMinutes / (24 * 60)));
+        
+        var resultArray = [];
+        if(days != 0) resultArray.push(days + ' days');
+        if(hours != 0) resultArray.push(hours + ' hours');
+        if(minutes != 0) resultArray.push(minutes + ' minutes');
+        
+        var result = '';
+        
+        for(var i = 0; i < resultArray.length; i++) {
+          result += resultArray[i];
+          if(i != resultArray.length - 1) result += ', ';
+        }
+        
+        return result || 'No events matched your search!';
+      }
+    },
+    data: {
+      message: 'Hello Vue!',
+      selectedCalendarIndex: -1,
+      timeSpent: -1,
+      calendars: [],
+      filterForm: {
+        title: '',
+        weeksBefore: 1
+      }
+    }
+  });
+</script>

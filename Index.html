@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('Styles'); ?>
+  </head>
+  <body>
+    <div id="app">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-3">
+            <ul class="list-group calendar-list">
+              <li class="list-group-item title">Your Calendars</li>
+              <li class="list-group-item loader" v-if="calendars.length == 0">
+                <i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Loading
+              </li>
+              <li
+                v-for="(calendar, index) in calendars"
+                :key="calendar.id"
+                class="list-group-item list-calendar-item"
+                :class="{ active: index == selectedCalendarIndex }"
+                :style="{ borderLeftColor: calendar.color }"
+                @click="selectCalendar(index)">
+                <i class="fa fa-star-o" aria-hidden="true" v-if="calendar.primary"></i>
+                {{ calendar.name }}
+              </li>
+            </ul>
+          </div>
+          <div class="col-9">
+            <div class="card filter-card">
+              <div class="card-header">
+                Filter Options
+              </div>
+              <div class="card-body">
+                <form class="filter-form">
+                  <div class="form-group">
+                    <label for="search-text" class="filter-form-label">Title</label>
+                    <div class="filter-form-value">
+                      <input type="text" class="form-control" id="search-text" v-model.trim="filterForm.title">
+                    </div>
+                  </div>
+                    
+                  <div class="form-group">
+                    <label for="start-date" class="filter-form-label">Start</label>
+                    <div class="filter-form-value input-group">
+                      <input type="text" class="form-control" id="start-date" v-model.number="filterForm.weeksBefore">
+                      <span class="input-group-addon">weeks before</span>
+                    </div>
+                  </div>
+                    
+                  <div class="form-group">
+                    <label for="end-date" class="filter-form-label">End</label>
+                    <div class="filter-form-value">
+                      <input type="text" readonly class="form-control" id="end-date" value="Today">
+                    </div>
+                  </div>
+                </form>
+                
+                <button type="button" class="btn btn-primary" @click="onPressSearch">Search</button>
+              </div>
+            </div>
+            
+            <div class="alert alert-primary" role="alert" v-if="timeSpent != -1">
+              <b>Result:</b> {{ timeSpentParsed }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <?!= include('Javascript'); ?>
+  </body>
+</html>
+
+
