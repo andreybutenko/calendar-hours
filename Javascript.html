@@ -1,4 +1,5 @@
-<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/vue@2.4.2"></script>
+<script src="https://unpkg.com/moment@2.18.1"></script>
 <script>
   var app = new Vue({
     el: '#app',
@@ -15,8 +16,20 @@
       },
       onPressSearch() {
         google.script.run.withSuccessHandler((resultData) => {
-          this.timeSpent = resultData;
-        }).getTime(this.calendars[this.selectedCalendarIndex].name, this.filterForm.title, this.filterForm.weeksBefore);
+          this.timeSpent = resultData.time;
+          this.events = resultData.events;
+        })
+        .withFailureHandler((error) => { console.log(error) })
+        .getTime(this.calendars[this.selectedCalendarIndex].name, this.filterForm.title, this.filterForm.weeksBefore);
+      },
+      getDate(date) {
+        return moment(date).format('MMMM Do YYYY');
+      },
+      getTime(date) {
+        return moment(date).format('h:mm a');
+      },
+      getColor(colorId) {
+        return this.eventColors[colorId].color;
       }
     },
     computed: {
@@ -39,16 +52,36 @@
         }
         
         return result || 'No events matched your search!';
+      },
+      currentCalendarName: function() {
+        return this.selectedCalendarIndex != -1 ? this.calendars[this.selectedCalendarIndex].name : '';
+      },
+      currentCalendarColor: function() {
+        return this.selectedCalendarIndex != -1 ? this.calendars[this.selectedCalendarIndex].color : '';
       }
     },
     data: {
       message: 'Hello Vue!',
       selectedCalendarIndex: -1,
       timeSpent: -1,
+      events: [],
       calendars: [],
       filterForm: {
         title: '',
         weeksBefore: 1
+      },
+      eventColors: {
+        1: { name: 'Pale Blue', color: '#a4bdfc' },
+        2: { name: 'Pale Green', color: '#7ae7bf' },
+        3: { name: 'Purple', color: '#bdadff' },
+        4: { name: 'Pale Red', color: '#ff887c' },
+        5: { name: 'Yellow', color: '#fbd75b' },
+        6: { name: 'Orange', color: '#ffb878' },
+        7: { name: 'Turquoise', color: '#46d6db' },
+        8: { name: 'Gray', color: '#e1e1e1' },
+        9: { name: 'Bold Blue', color: '#5484ed' },
+        10: { name: 'Bold Green', color: '#51b749' },
+        11: { name: 'Bold Red', color: '#dc2127' }
       }
     }
   });

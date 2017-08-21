@@ -34,6 +34,13 @@
               <div class="card-body">
                 <form class="filter-form">
                   <div class="form-group">
+                    <label for="calendar-name" class="filter-form-label">Calendar</label>
+                    <div class="filter-form-value">
+                      <input type="text" readonly class="form-control" id="calendar-name" v-model="currentCalendarName">
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
                     <label for="search-text" class="filter-form-label">Title</label>
                     <div class="filter-form-value">
                       <input type="text" class="form-control" id="search-text" v-model.trim="filterForm.title">
@@ -63,6 +70,20 @@
             <div class="alert alert-primary" role="alert" v-if="timeSpent != -1">
               <b>Result:</b> {{ timeSpentParsed }}
             </div>
+            
+            <h4 v-if="timeSpent > 0">Found {{ events.length }} events!</h4>
+            
+            <ul class="list-group">
+              <li 
+                v-for="(event, index) in events"
+                :key="event.id"
+                class="list-group-item list-event-item"
+                :style="{ borderLeftColor: event.color != '' ? getColor(event.color) : currentCalendarColor }">
+                <h5 class="card-title">{{ event.title }}</h5>
+                <small class="text-muted">{{ getDate(event.start) }} &middot; {{ getTime(event.start) }} - {{ getTime(event.end) }} &middot; {{ event.length }} {{ event.length != 1 ? 'hours' : 'hour'  }}</small>
+                <p v-if="event.description">{{ event.description }}</p>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

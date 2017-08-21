@@ -41,8 +41,10 @@ function getTime(calendarName, title, weeksBefore) {
     
   var calendarEvents = calendar.getEvents(start, end);
   
-  var valid =  0;
-  var time = 0;
+  var result = {
+    time: 0,
+    events: []
+  };
   
   for(var i = 0; i < calendarEvents.length; i++) {
     var event = calendarEvents[i];
@@ -50,12 +52,20 @@ function getTime(calendarName, title, weeksBefore) {
       var startTime = event.getStartTime();
       var endTime = event.getEndTime();
       
-      valid++;
-      time += (endTime - startTime);
+      result.time += (endTime - startTime);
       
-      Logger.log(event.getTitle() + ' lasted ' + ((endTime - startTime) / (60 * 60 * 1000)) + ' hours');
+      result.events.push({
+        id: event.getId(),
+        title: event.getTitle(),
+        description: event.getDescription(),
+        color: event.getColor(),
+        start: event.getStartTime().getTime(),
+        end: event.getEndTime().getTime(),
+        length: (endTime - startTime) / (60 * 60 * 1000)
+      });
     }
   }
-  Logger.log('While searching for ' + title + ', found ' + valid  + ' events lasting ' + time);
-  return time;
+  result.events.reverse();
+  Logger.log(result);
+  return result;
 }
