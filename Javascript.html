@@ -19,7 +19,9 @@
         this.selectedCalendarIndex = index;
       },
       onPressSearch() {
+        this.loading = true;
         google.script.run.withSuccessHandler((resultData) => {
+          this.loading = false;
           this.timeSpent = resultData.time;
           this.events = resultData.events;
         })
@@ -48,6 +50,7 @@
         var timeSpentMinutes = this.timeSpent / (60 * 1000);
         var minutes = Math.floor(timeSpentMinutes % 60);
         var hours = Math.floor((timeSpentMinutes / 60) % 24);
+        var hoursTotal = Math.floor(timeSpentMinutes / 60);
         var days = Math.floor((timeSpentMinutes / (24 * 60)));
         
         var resultArray = [];
@@ -61,6 +64,8 @@
           result += resultArray[i];
           if(i != resultArray.length - 1) result += ', ';
         }
+        
+        if(hoursTotal > 24) result += ' (' + hoursTotal + ' hours total)';
         
         return result || 'No events matched your search!';
       },
@@ -89,6 +94,7 @@
       }
     },
     data: {
+      loading: false,
       selectedCalendarIndex: -1,
       timeSpent: -1,
       events: [],

@@ -60,7 +60,7 @@
                   <div class="form-group">
                     <label for="search-text" class="filter-form-label">Title</label>
                     <div class="filter-form-value">
-                      <input type="text" class="form-control" id="search-text" v-model.trim="filterForm.title">
+                      <input type="text" class="form-control" id="search-text" v-model.trim="filterForm.title" @keyup.enter="onPressSearch">
                     </div>
                   </div>
                   
@@ -95,7 +95,7 @@
                   <div class="form-group">
                     <label for="start-date" class="filter-form-label">Start</label>
                     <div class="filter-form-value input-group">
-                      <input type="text" class="form-control" id="start-date" v-model.number="filterForm.weeksBefore">
+                      <input type="text" class="form-control" id="start-date" v-model.number="filterForm.weeksBefore" @keyup.enter="onPressSearch">
                       <span class="input-group-addon">weeks ago</span>
                     </div>
                   </div>
@@ -108,23 +108,29 @@
                   </div>
                 </form>
                 
-                <button class="btn btn-link" @click="toggleAdvanced">Advanced <i class="fa" :class="{ 'fa-angle-down': !advancedVisible, 'fa-angle-up': advancedVisible }" aria-hidden="true"></i></button>
-                <button class="btn btn-primary" @click="onPressSearch">Search</button>
+                <div class="btn-container">
+                  <button class="btn btn-link" @click="toggleAdvanced">Advanced <i class="fa" :class="{ 'fa-angle-down': !advancedVisible, 'fa-angle-up': advancedVisible }" aria-hidden="true"></i></button>
+                  <button class="btn btn-primary" @click="onPressSearch" :disabled="loading">Search</button>
+                </div>
               </div>
-              <div class="card-body" v-if="advancedVisible">
+              <div class="card-body advanced-section" :class="{ 'advanced-section-expanded': advancedVisible }">
                 <h6 class="card-subtitle text-muted">Title</h6>
                 <p>
                   You can select multiple strings to search for in the title by seperating them with an <code>OR</code>! For example, <code>work OR freelance</code> will find events with work or freelance in the title!
               </div>
             </div>
             
-            <div class="alert alert-primary" role="alert" v-if="timeSpent != -1">
+            <div class="alert alert-warning" role="alert" v-if="loading">
+              Loading results...
+            </div>
+            
+            <div class="alert alert-primary" role="alert" v-if="timeSpent != -1 && !loading">
               <b>Result:</b> {{ timeSpentParsed }}
             </div>
             
-            <h4 v-if="timeSpent > 0">Found {{ events.length }} events!</h4>
+            <h4 v-if="timeSpent > 0 && !loading">Found {{ events.length }} events!</h4>
             
-            <ul class="list-group">
+            <ul class="list-group" v-if="!loading">
               <li 
                 v-for="(event, index) in events"
                 :key="index"
